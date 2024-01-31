@@ -1,5 +1,3 @@
-import random
-import os
 from selenium import webdriver
 import time
 from selenium.webdriver.common.keys import Keys
@@ -8,65 +6,67 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
+import os
+import chromedriver_autoinstaller
+from assets.Operations import *
+classNames = {
+    "Angle_className": "c-challenges-item__exposure__meter__arrow",
+    "VoteBtn_ClassName": "action-button-gen",
+    "VoteParents_ClassName": "c-challenges-item__exposure__footer",
+    "CloseAdClassName": "fs-close-button fs-close-button-sticky",
+    "AdElementClassName": "fs-sticky-slot-element",
+    "cardsClosebtnsClassName": "c-cards__close"
+}
+chromeVersion = get_chrome_browser_version()
+versionNums = chromeVersion.split(".")
 script_directory = os.path.dirname(os.path.abspath(__file__))
-print(script_directory)
-Driver_path = os.path.join(script_directory, 'assets', 'chromedriver.exe')
+Driver_path = os.path.join(
+    script_directory, "assets", versionNums[0], 'chromedriver.exe')
 opt = Options()
 opt.add_experimental_option("debuggerAddress", "localhost:8989")
 
-
-def logger(msg):
-    print(msg)
-
-
-if (os.path.exists(Driver_path)):
-    print("path is there")
+if os.path.exists(Driver_path):
     driver = webdriver.Chrome(
         executable_path=Driver_path, chrome_options=opt)
-    actions = ActionChains(driver)
     driver.get("https://gurushots.com/challenges/my-challenges/current")
     driver.implicitly_wait(10)
-    Angle_className = "c-challenges-item__exposure__meter__arrow"
-    # VoteBtn_ClassName = "c-challenges-item__btn--s--"
-    VoteBtn_ClassName = "action-button-gen"
-    VoteParents_ClassName = "c-challenges-item__exposure__footer"
-    CloseAdClassName = "fs-close-button fs-close-button-sticky"
-    AdElementClassName = "fs-sticky-slot-element"
-    AngleElements = driver.find_elements(By.CLASS_NAME, Angle_className)
-    VoteParents = driver.find_elements(By.CLASS_NAME, VoteParents_ClassName)
+
+    cardsClosebtns = driver.find_elements(
+        By.CLASS_NAME, classNames["cardsClosebtnsClassName"])
+    closeCards(cardsClosebtns=cardsClosebtns)
+    AngleElements = driver.find_elements(
+        By.CLASS_NAME, classNames["Angle_className"])
+    VoteParents = driver.find_elements(
+        By.CLASS_NAME, classNames["VoteParents_ClassName"])
     voteModalXpath = "//body[1]/app-root[1]/div[1]/div[1]/gs-modals[1]/div[1]"
     LetsGoBtnXpath = "//body[1]/app-root[1]/div[1]/div[1]/gs-modals[1]/div[1]/modal-vote[1]/div[4]/div[1]/div[1]/div[1]"
-
-    VoteBtns = []
-    for btn in VoteParents:
-        VoteBtns.append(btn)
+    # get All available voting btns
+    VoteBtns = getvoteBtns(VoteParents=VoteParents)
     anglesNow = []
     for element in AngleElements:
         style_attribute = element.get_attribute("style")
-        #  '(' is at 17
         anglesNow.append(style_attribute[18:style_attribute.index('d')])
     print(anglesNow)
     for index, deg in enumerate(anglesNow):
         print((deg))
         if float(deg) < 90.0:
-            logger("Clicking on "+str(index+1)+" vote btn")
-            # driver.execute_script("arguments[0].click();", VoteBtns[index])
+            print("Clicking on "+str(index+1)+" vote btn")
             VoteBtns[index].click()
             driver.implicitly_wait(10)
-            logger("waiting for something")
+            print("waiting for something")
             wait = WebDriverWait(driver, 100)
             modal_element = wait.until(EC.presence_of_element_located(
                 (By.XPATH, voteModalXpath)))
-            logger("modal might be up")
+            print("modal might be up")
 
             driver.implicitly_wait(10)
-            logger("Trying to find Lets go btn inside model")
+            print("Trying to find Lets go btn inside model")
 
             button_inside_modal = modal_element.find_element(
                 By.XPATH, LetsGoBtnXpath)
 
             button_inside_modal.click()
-            logger("Cicked on the Lets go btn")
+            print("Cicked on the Lets go btn")
 
             driver.implicitly_wait(10)
 
@@ -94,7 +94,7 @@ if (os.path.exists(Driver_path)):
                     rans.append(i)
                     try:
                         ArrayofPhotos[i].click()
-                        time.sleep(0.5)
+                        time.sleep(0.3)
                         driver.implicitly_wait(10)
 
                     except:
@@ -119,4 +119,4 @@ if (os.path.exists(Driver_path)):
             print("this challenge is voted!")
     driver.quit()
 else:
-    print("path not valid")
+    print("Error with the driver path")

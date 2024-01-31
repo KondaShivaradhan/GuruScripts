@@ -1,1 +1,2 @@
-pip install selenium webdriver_manager
+pip install selenium webdriver_manager wget chromedriver-autoinstaller
+ 
