@@ -1,2 +1,6 @@
 .idea/
-.assets/_pycache_
+.assets/*.pyc
+_pycache_/
+*.pyc
+*.pyc
+assets/__pycache__/Operations.cpython-311.pyc

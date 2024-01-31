@@ -7,7 +7,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 import os
-import chromedriver_autoinstaller
 from assets.Operations import *
 classNames = {
     "Angle_className": "c-challenges-item__exposure__meter__arrow",
